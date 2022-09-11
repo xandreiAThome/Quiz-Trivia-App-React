@@ -34,9 +34,14 @@ export default function Questions(props) {
   function Clicked(id) {
     setChoice((prevChoice) =>
       prevChoice.map((choice) => {
-        return id === choice.id
-          ? { ...choice, isClicked: !choice.isClicked }
-          : choice;
+        if (
+          (id !== choice.id && choice.isClicked) ||
+          (id === choice.id && choice.isClicked)
+        ) {
+          return { ...choice, isClicked: false };
+        } else if (id === choice.id && !choice.isClicked) {
+          return { ...choice, isClicked: true };
+        } else return choice;
       })
     );
   }
