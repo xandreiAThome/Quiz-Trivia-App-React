@@ -1,0 +1,120 @@
+* {
+    box-sizing: border-box;
+}
+
+html {
+    height:auto;
+}
+
+body {
+    background-color: #F5F7FB;
+    font-family: "Karla", sans-serif;
+    background: url("./src/assets/blobs.png") top right no-repeat
+    , url("./src/assets/blob 5.png") bottom left no-repeat;
+    color:#293264;
+    
+}
+
+
+.start--wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height:100vh;
+}
+
+/*.app--container {
+    display: flex;
+    flex-direction: column;
+    height:100vh;
+}*/
+
+.app--container{
+    height: 100vh;
+}
+
+.start-description {
+    font-weight: 400;
+}
+
+.start--button {
+    background: #4D5B9E;
+    color:#F5F7FB;
+    height: 60px;
+    width: 200px;
+    border-radius: 15px;
+    font-weight: 400;
+    font-size: 16px;
+}
+
+.questions--container {
+    margin-top: 50px;
+    margin-left: 30px;
+}
+
+.questions {
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.choice{
+    max-width: 160px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-self: center;
+    padding:5px 5px 5px 5px;
+    cursor: pointer;
+    margin-right: 25px;
+}
+
+.choice--container {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.check--button--container{
+    display: flex;
+    justify-content: center;
+}
+
+.check--button {
+    background: #4D5B9E;
+    color:#F5F7FB;
+    height: 60px;
+    width: 200px;
+    border-radius: 15px;
+    font-weight: 400;
+    font-size: 16px;
+    margin-top: 5vh;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+   
+}
+
+.break--line {
+    margin-top: 20px;
+    border: 0.79px solid #DBDEF0;
+}
+
+.reset--button {
+    background: #4D5B9E;
+    color:#F5F7FB;
+    height: 60px;
+    width: 200px;
+    border-radius: 15px;
+    font-weight: 400;
+    font-size: 16px;
+}
+
+.tally--container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin-top: 20px;
+}
