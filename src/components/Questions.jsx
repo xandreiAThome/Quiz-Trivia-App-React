@@ -2,16 +2,24 @@ import React from "react";
 import Choices from "./Choices";
 import { nanoid } from "nanoid";
 
-// a variable to lock the choices so that only one choice can be selected
-export default function Questions({ questions, check, correct }) {
-  const choicesArray = [
-    {
-      choice: atob(questions.correct_answer),
-      correct: true,
+export default function Questions(props) {
+  const [hold, setHold] = React.useState(false);
+
+  const choicesArray = props.question.incorrect_answer.map((incorrect) => {
+    return {
+      choice: incorrect,
+      isCorrect: false,
       id: nanoid(),
-      clicked: false,
-    },
-  ];
+      isClicked: false,
+    };
+  });
+
+  choicesArray.push({
+    choice: props.question.correct_answer,
+    isCorrect: true,
+    id: nanoid(),
+    isClicked: false,
+  });
 
   // the questions are shuffled because the correct answers always comes first when the api is called
   function shuffle(array) {
@@ -23,51 +31,42 @@ export default function Questions({ questions, check, correct }) {
     return array;
   }
 
-  questions.incorrect_answers.map((incorrect) =>
-    choicesArray.push({
-      choice: atob(incorrect),
-      correct: false,
-      id: nanoid(),
-      clicked: false,
-    })
-  );
   function Clicked(id) {
-    setChoice((prev) =>
-      prev.map((choice) => {
-        if (!hold && id === choice.id) {
-          setHold(true);
-          return { ...choice, clicked: true };
-        } else if (hold && id === choice.id && choice.clicked) {
-          setHold(false);
-          return { ...choice, clicked: false };
-        } else {
-          return choice;
-        }
+    setChoice((prevChoice) =>
+      prevChoice.map((choice) => {
+        return id === choice.id
+          ? { ...choice, isClicked: !choice.isClicked }
+          : choice;
       })
     );
   }
 
   const [choiceState, setChoice] = React.useState(shuffle(choicesArray));
-  // boolean state to lock choices so that only one can be chosen at a time
-  const [hold, setHold] = React.useState(false);
+
+  React.useEffect(() => {
+    let tally = 0;
+    if (props.gameLoopState === "check") {
+      for (let i = 0; i < choiceState.length; i++) {
+        if (choiceState[i].isClicked && choiceState[i].isCorrect) {
+          tally += 1;
+        }
+      }
+      props.Tally(tally);
+    }
+  }, [props.gameLoopState]);
 
   const choices = choiceState.map((choice) => (
     <Choices
-      choices={choice}
-      key={choice.id}
-      id={choice.id}
+      choice={choice}
       Clicked={() => Clicked(choice.id)}
-      check={check}
-      correct={correct}
+      key={choice.id}
+      gameLoopState={props.gameLoopState}
     />
   ));
 
   return (
     <div>
-      {/**Using atob because the api returns base 64 bits and atob
-       * decodes that
-       */}
-      <h3 className="questions">{atob(questions.question)}</h3>
+      <h3 className="questions">{props.question.questions}</h3>
       <div className="choice--container">{choices}</div>
       <hr className="break--line" />
     </div>

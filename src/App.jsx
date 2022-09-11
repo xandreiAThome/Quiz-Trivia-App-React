@@ -4,54 +4,76 @@ import Start from "./components/Start";
 import { nanoid } from "nanoid";
 
 export default function App() {
-  const [proceed, setProceed] = React.useState(false);
+  const [gameLoopState, setGameLoopState] = React.useState("start");
   const [questions, setQuestions] = React.useState([]);
-  const [correct, setCorrect] = React.useState(0);
-  const [check, setCheck] = React.useState(false);
-
-  function Proceed() {
-    setProceed((prevState) => !prevState);
-  }
+  const [requestAPI, setRequestAPI] = React.useState(false);
+  const [tally, setTally] = React.useState(0);
 
   React.useEffect(() => {
     fetch("https://opentdb.com/api.php?amount=5&encode=base64")
       .then((res) => res.json())
-      .then((data) => setQuestions(data.results));
-  }, []);
+      .then((data) =>
+        setQuestions(
+          //decoding the 64bit reply of the API
+          data.results.map((data) => {
+            return {
+              category: atob(data.category),
+              correct_answer: atob(data.correct_answer),
+              difficulty: atob(data.difficulty),
+              incorrect_answer: data.incorrect_answers.map((incorrect) =>
+                atob(incorrect)
+              ),
+              questions: atob(data.question),
+              type: atob(data.type),
+              id: nanoid(),
+            };
+          })
+        )
+      );
+  }, [requestAPI]);
 
-  function countCorrect() {
-    setCorrect((prevCorrect) => prevCorrect + 1);
+  function Tally(x) {
+    setTally((prev) => prev + x);
   }
 
+  function Reset() {
+    setGameLoopState("game");
+    setRequestAPI((prev) => !prev);
+    setTally(0);
+  }
+
+  function Proceed() {
+    setGameLoopState("game");
+    setRequestAPI((prev) => !prev);
+  }
   const allQuestions = questions.map((question) => (
     <Questions
-      questions={question}
-      key={question.question}
-      check={check}
-      correct={() => countCorrect()}
+      question={question}
+      key={question.id}
+      gameLoopState={gameLoopState}
+      Tally={Tally}
     />
   ));
 
-  function Reset() {
-    location.reload();
-    return false;
-  }
-
   return (
     <div className="app--container">
-      {!proceed && <Start Proceed={() => Proceed()} />}
-      <div className="questions--container">{proceed && allQuestions}</div>
-      {!check && proceed && (
+      {console.log(tally)}
+      {gameLoopState === "start" && <Start Proceed={() => Proceed()} />}
+      <div className="questions--container">
+        {(gameLoopState === "game" || gameLoopState === "check") &&
+          allQuestions}
+      </div>
+      {gameLoopState === "game" && (
         <button
           className="check--button"
-          onClick={() => setCheck((prevCheck) => !prevCheck)}
+          onClick={() => setGameLoopState("check")}
         >
           Check Answers
         </button>
       )}
-      {check && (
+      {gameLoopState === "check" && (
         <div className="tally--container">
-          <h3 className="tally">Correct Answers: {correct}</h3>{" "}
+          <h3 className="tally">Correct Answers: {tally}</h3>{" "}
           <button className="reset--button" onClick={Reset}>
             Play Again
           </button>
