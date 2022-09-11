@@ -13,6 +13,7 @@ export default function Choices(props) {
   } else if (props.gameLoopState === "check" && props.choice.isClicked) {
     clickedStyles = {
       background: props.choice.isCorrect ? "#94D7A2" : "#F8BCBC",
+      opacity: !props.choice.isCorrect && "0.5",
     };
     // if the chosen option is wrong, highlights the correct one
   } else if (
