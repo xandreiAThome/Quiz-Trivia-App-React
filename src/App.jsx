@@ -9,7 +9,17 @@ export default function App() {
   const [requestAPI, setRequestAPI] = React.useState(false);
   const [tally, setTally] = React.useState(0);
 
-  React.useEffect(() => {
+  // custom hook that makes a react.useeffect not run on initial render
+  const useDidMountEffect = (func, deps) => {
+    const didMount = React.useRef(false);
+
+    React.useEffect(() => {
+      if (didMount.current) func();
+      else didMount.current = true;
+    }, deps);
+  };
+
+  useDidMountEffect(() => {
     fetch("https://opentdb.com/api.php?amount=5&encode=base64")
       .then((res) => res.json())
       .then((data) =>
